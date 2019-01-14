@@ -40,9 +40,11 @@ Betreut von: Claire Rippinger \& Christoph Urach
 
 \section{Abstract}
 
+TODO: scrivere l'astratto (inglese)
+
 \section{Einleitung}
 
-
+In dem von dexhelpp geschaffenen Modell für die Laufbahn österreichischer Ärzte von Studienbeginn bis Pensionierung sollen bestimmte Parameter via Optimierungsalgorithmen kalibriert werden. Da das Modell sehr detailliert und komplex ist, dauert ein Simulationsdurchlauf mehrere Minuten. Deshalb ist es notwendig Algorithmen zu finden, die mit Simulationsauswertungen sehr sparsam umgehen. 
 
 \subsection{Das Modell}
 
@@ -58,11 +60,9 @@ Das ganze Modell hat hunderte Parameter, die zum größten Teil aus Expertensch�
 \end{figure}
 
 
-\subsection{Die Aufgabestellung}
+\subsection{Die Aufgabenstellung}
 
-%Jedes Jahr gehen ÄrztInnen in Pension. Die offenen Stellen, die dadurch hinterlassen werden, sollen idealerweise durch Berufseinsteiger möglichst genau gefüllt werden. Um dies zu erzielen, müssen die Anzahlen der Ausbildungsstellen jedes Jahr genau gewählt werden. Mit dieser optimalen Wahl beschäftigt sich diese Seminararbeit.
-
-Diese Seminararbeit beschäftigt sich mit der optimalen Wahl der Anzahl der Ausbildungsstellen, jeweils für Allgemeinmediziner und Fachärzte. Jedes Jahr, wenn ÄrztInnen in Pension gehen, werden offene Stellen hinterlassen, die idealerweise durch Berufseinsteiger gefüllt werden. Ziel ist es, genau so viele Absolventen wie offene Stellen in den jeweiligen Bereichen zu haben.
+Diese Seminararbeit beschäftigt sich mit der optimalen Wahl der Anzahl der Ausbildungsstellen, jeweils für Allgemeinmediziner und Fachärzte. Jedes Jahr, wenn ÄrztInnen in Pension gehen, werden offene Stellen hinterlassen, die idealerweise durch Berufseinsteiger gefüllt werden. Ziel ist es, möglichst genau so viele Absolventen wie offene Stellen in den jeweiligen Bereichen zu haben.
 
 \subsection{Das vereinfachte Modell}
 
@@ -78,7 +78,7 @@ Die drei verwendeten Algorithmen haben einiges gemeinsam. Als gemeinsame Argumen
 
 Als Output haben die Algorithmen (natürlicherweise) den Input für die Funktion $f$ wo das Minimum vermutet ist. 
 
-Durch die unmittelbare Anwendungsnähe ist Echtzeit-Laufzeit das wichtigste Bewertungskriterium. Durch die moderne Prozessorarchitektur mit mehreren Kernen betrachten wir auch die Parallelisierbarkeit der Algorithmen. Da die Verwendung von mehreren Kernen in einem Simulationsdurchlauf nicht einfach möglich ist, bzw. nicht im Scope dieser Seminararbeit liegt müssen wir uns mit der parallelen Ausführung von mehreren Simulationsdurchläufen begnügen.
+Durch die unmittelbare Anwendungsnähe ist Echtzeit-Laufzeit das wichtigste Bewertungskriterium. Durch die moderne Prozessorarchitektur mit mehreren Kernen betrachten wir auch die Parallelisierbarkeit der Algorithmen. Da die Verwendung von mehreren Kernen in einem Simulationsdurchlauf nicht einfach möglich ist, bzw. nicht im Scope dieser Seminararbeit liegt, müssen wir uns mit der parallelen Ausführung von mehreren Simulationsdurchläufen begnügen.
 
 \subsection{Partikelschwarm}
 
@@ -142,7 +142,7 @@ Durch die einzelnen Schritte eignet sich dieser Algorithmus nicht besonders gut 
 
 \subsection{Downhill Simplex}
 
-Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen Hülle von $d+1$ vielen Punkten. Die Eckpunkte werden ausgewertet und in jedem Schritt wird der schlechteste Eckpunkt durch einen (hoffentlich) besseren ersetzt. Der Simplex bewegt sich dadurch im Laufe der Zeit dem figurativen Hügel hinab einem lokalen Minimum entgegen und zieht sich letztendlich über dem Minimum zusammen.
+Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen Hülle von $d+1$ vielen Punkten. Die Eckpunkte werden ausgewertet und in jedem Schritt wird der schlechteste Eckpunkt durch einen besseren ersetzt. Der Simplex bewegt sich dadurch im Laufe der Zeit dem figurativen Hügel hinab einem lokalen Minimum entgegen und zieht sich letztendlich über dem Minimum zusammen.
 
 \begin{algorithm}
 \caption{Downhill Simplex}
@@ -185,7 +185,7 @@ Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen
 
 \Else
 
-\State $h := x_N$
+\State $h := x_d$
 
 \EndIf
 
@@ -208,7 +208,11 @@ Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen
 \end{algorithmic}
 \end{algorithm}
 
-Im Pseudocode wurde $f$ hier oftmals zur Klarheit doppelt und dreifach aufgerufen. In der tatsächlichen Implementation wird $f$ für jeden Punkt natürlich nur einmal aufgerufen und das Ergebnis gespeichert. In jedem Schritt gibt es zwei Möglichkeiten, entweder der schlechteste Punkt wird ersetzt oder der Simplex wird komprimiert. Zweiteres tritt dann auf, wenn keiner der 
+Im Pseudocode wurde $f$ hier oftmals zur Klarheit doppelt und dreifach aufgerufen. In der tatsächlichen Implementation wird $f$ für jeden Punkt natürlich nur einmal aufgerufen und das Ergebnis gespeichert.
+
+In jedem Schritt gibt es zwei Möglichkeiten, entweder der schlechteste Punkt wird ersetzt oder der Simplex wird komprimiert. Im ersten Fall gibt es vier Kandidaten für die neue Stelle des Eckpunkts, nämlich $r$, $e$ und zwei mal $c$, je nachdem ob $h$ als $r$ oder $x_d$ gewählt wird. Im Sinne der Parallelisierung können nun die 4 Möglichkeiten gleichzeitig ausgewertet werden und man erkauft sich einen bis zu dreifache Beschleunigung. 
+
+Beim ersten Auswerten der Eckpunkte und beim Kontrahieren des Simplex kann natürlich auch parallelisiert werden. 
 
 
 \subsection{Vergleich}
@@ -216,8 +220,6 @@ Im Pseudocode wurde $f$ hier oftmals zur Klarheit doppelt und dreifach aufgerufe
 \newpage
 
 \section{Bewertungsfunktionen}
-
-\subsection{Die erste Bewertungsfunktion}
 
 Die folgenden Variablen sind allesamt Vektoren, die die jeweilige Größe für Allgemeinmediziner ($AM$) und Fachärzte ($FA$) über die Simulationsperiode $J$ darstellen.
 
@@ -230,6 +232,8 @@ $AM_f$ & $FA_f$ & Berufseinsteiger (f wie fertig) & Modellresultat \\ \hline
 $AM_p$ & $FA_p$ & pensionierte Ärzte & vorgegebener Zielwert \\ \hline
 \end{tabular}
 \end{center}
+
+\subsection{Die erste Bewertungsfunktion}
 
 Die erste Bewertungsfunktion ist:
 
