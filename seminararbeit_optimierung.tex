@@ -42,6 +42,8 @@ Betreut von: Claire Rippinger \& Christoph Urach
 
 TODO: scrivere l'astratto (inglese)
 
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
 \section{Einleitung}
 
 In dem von dexhelpp geschaffenen Modell für die Laufbahn österreichischer Ärzte von Studienbeginn bis Pensionierung sollen bestimmte Parameter via Optimierungsalgorithmen kalibriert werden. Da das Modell sehr detailliert und komplex ist, dauert ein Simulationsdurchlauf mehrere Minuten. Deshalb ist es notwendig Algorithmen zu finden, die mit Simulationsauswertungen sehr sparsam umgehen. 
@@ -210,9 +212,9 @@ Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen
 
 Im Pseudocode wurde $f$ hier oftmals zur Klarheit doppelt und dreifach aufgerufen. In der tatsächlichen Implementation wird $f$ für jeden Punkt natürlich nur einmal aufgerufen und das Ergebnis gespeichert.
 
-In jedem Schritt gibt es zwei Möglichkeiten, entweder der schlechteste Punkt wird ersetzt oder der Simplex wird komprimiert. Im ersten Fall gibt es vier Kandidaten für die neue Stelle des Eckpunkts, nämlich $r$, $e$ und zwei mal $c$, je nachdem ob $h$ als $r$ oder $x_d$ gewählt wird. Im Sinne der Parallelisierung können nun die 4 Möglichkeiten gleichzeitig ausgewertet werden und man erkauft sich einen bis zu dreifache Beschleunigung. 
+In jedem Schritt gibt es zwei Möglichkeiten, entweder der schlechteste Punkt wird ersetzt oder der Simplex wird komprimiert. Im ersten Fall gibt es vier Kandidaten für die neue Stelle des Eckpunkts, nämlich $r$, $e$ und zwei mal $c$, je nachdem ob $h$ als $r$ oder $x_d$ gewählt wird. Im Sinne der Parallelisierung können nun die 4 Möglichkeiten gleichzeitig ausgewertet werden und man erkauft sich eine bis zu dreifache Beschleunigung. 
 
-Beim ersten Auswerten der Eckpunkte und beim Kontrahieren des Simplex kann natürlich auch parallelisiert werden. 
+Beim ersten Auswerten der Eckpunkte zu Beginn und beim Kontrahieren des Simplex kann natürlich auch parallelisiert werden. 
 
 
 \subsection{Vergleich}
@@ -293,11 +295,15 @@ F_3(\hdots) = \hdots & \hspace{4pt} + \\
 \end{align*}
 
 
-%\section{Technische Details}
-%
-%Die gesamte Codebase ist in Python 3 geschrieben. 
+\section{Technische Details}
+
+Die gesamte Codebase ist in Python 3 geschrieben. Das Modell ist als importierte Funktion aufrufbar. Da die Signatur dieser Funktion ein $dict$ ist, welches Einträge für je Allgemeinmediziner und Fachärzte hat, die Algorithmen aber ein einzelnes $numpy$-Array erwarten wurde ein Wrapper für das Modell implementiert, der Argumente übersetzt. Dieser wendet auch gleich die Bewertungsfunktion auf das Modellresultat an. Auf diese Weise konnten die Algorithmen komplett modellagnostisch implementiert werden. 
+
+Zusätzlich schreibt der Wrapper alle Funktionsaufrufe in einer $.csv$ Datei mit. Es werden die Parameter, die Modellergebnisse, der Wert der Bewertungsfunktion sowie die einzelnen Komponenten der Bewertungsfunktion gespeichert. Dies ermöglicht detaillierte Analyse des Konvergenzverhaltens.
 
 \section{Resultate}
+
+
 
 \section{Fazit}
 
