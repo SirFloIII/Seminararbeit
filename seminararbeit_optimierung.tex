@@ -16,6 +16,7 @@
 \usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{hhline}
 
 \begin{document}
 
@@ -69,7 +70,7 @@ Diese Seminararbeit beschäftigt sich mit der optimalen Wahl der Anzahl der Ausb
 
 Es wird keine Rücksicht auf das Bundesland, in dem ein angehender Arzt seine Ausbildung absolviert, sowie die Fachrichtung eines angehenden Facharztes genommen. Es werden nur die Anzahl der freien Stellen und Absolventen aller Fachrichtungen in ganz Österreich verglichen. Optional wird die Anzahl der Ausbildungsstellen für je drei Jahre zusammengefasst. Dies bewirkt eine Dimensionsreduktion im Parameterraum.
 
-Sei also $J := \{2016,2017,\hdots,2030\}$ der Simulationszeitraum. Sei $J' := \{2019,2020,\hdots,2030\}$ der Outputzeitraum\footnote{Gibts da einen besseren Namen für das? Außerdem, stimmen diese Jahreszahlen eh? Ich hab sie aus meinen Plots abgelesen, aber da stehen sie im Code auch einfach nur hardcoded drinnen und ich hab keine Ahnung mehr wo ich sie eigentlich her hab.}. Formal gesehen ist das Modell dann eine Funktion $\mathcal M$:
+Sei also $J := \{2016,2017,\hdots,2030\}$ der Simulationszeitraum. Sei $J' := \{2019,2020,\hdots,2030\}$ der Outputzeitraum. Formal gesehen ist das Modell dann eine Funktion $\mathcal M$:
 
 \begin{equation*}
 \mathcal M: \mathbb{N}^J \times \mathbb{N}^J \rightarrow \mathbb{N}^{J'} \times \mathbb{N}^{J'} \times \mathbb{N}^{J} \times \mathbb{N}^{J}
@@ -96,7 +97,7 @@ $FA_p = (1082, 856, 880, 956, 978, 812, 761, 762, 752, 723, 680, 635)$
 
 \section{Bewertungsfunktionen}
 
-Um Optimierungsalgorithmen anwenden zu können, braucht man eine Möglichkeit, zwei Modellresultate zu vergleichen. Wir tun dies mittels einer Bewertungsfunktion $\mathcal F$:
+Um Optimierungsalgorithmen anwenden zu können, braucht man eine Möglichkeit, zwei Modellresultate zu vergleichen. Wir tun dies mittels einer zu minimierenden Bewertungsfunktion $\mathcal F$:
 
 \begin{equation*}
 \mathcal F: \mathbb{N}^J \times \mathbb{N}^J \times \mathbb{N}^{J'} \times \mathbb{N}^{J'} \times \mathbb{N}^{J} \times \mathbb{N}^{J} \times \mathbb{N}^{J'} \times \mathbb{N}^{J'} \rightarrow \mathbb R
@@ -180,7 +181,7 @@ Als Output haben die Algorithmen (natürlicherweise) den Input für die Funktion
 
 Durch die unmittelbare Anwendungsnähe ist Echtzeit-Laufzeit das wichtigste Bewertungskriterium. Durch die moderne Prozessorarchitektur mit mehreren Kernen betrachten wir auch die Parallelisierbarkeit der Algorithmen. Da die Verwendung von mehreren Kernen in einem Simulationsdurchlauf nicht einfach möglich ist, bzw. nicht im Scope dieser Seminararbeit liegt, müssen wir uns mit der parallelen Ausführung von mehreren Simulationsdurchläufen begnügen.
 
-\subsection{Partikelschwarm}
+\subsection{Partikelschwarm \cite{kennedy_eberhart_1995}\cite{shi_eberhart_1998}}
 
 Dieser Algorithmus basiert auf einem Schwarm von Partikeln die sich durch den Parameterraum bewegen. Zu Beginn des Algorithmus werden die Positionen von einer Anzahl an Partikeln innerhalb der $bounds$ sowie deren Geschwindigkeit zufällig gewählt. In jedem Schritt wird die Geschwindigkeitsänderung, also eine Beschleunigung ausgerechnet. Diese zieht die Partikel zum Teil zu dem bisher besten Punkt, den der jeweilige Partikel erreicht hat und zum Teil zum bisher besten Punkt überhaupt. Zur Geschwindigkeit wird dann jeweils die Beschleunigung addiert und zur Position die Geschwindigkeit. 
 
@@ -239,7 +240,7 @@ Dieser Algorithmus basiert auf einem Schwarm von Partikeln die sich durch den Pa
 
 %\lstinputlisting[language=python, firstline = 52 , lastline = 98]{../particleswarm.py}
 
-\subsection{Sintflut}
+\subsection{Sintflut \cite{dueck_1993} }
 
 Der Sintflut-Algorithmus ist eine Verbesserung des naiven Hill-Climbing-Algorithmus, welcher an einem zufälligen Punkt im Parameterraum startet und dann iterativ zufällige Schritte macht. Bei einer Verbesserung wird der neue Punkt angenommen, sonst bleibt man beim alten Punkt. Eine große Schwäche des Hill-Climbing-Algorithmus ist das leichte Verfangen in lokalen Optima. Der Sintflut-Algorithmus verspricht diese Schwäche zu korrigieren.
 
@@ -274,7 +275,7 @@ Die Wahl des Startwasserstands und der Regenmenge ist von großer Bedeutung. Bei
 
 Die Regenmenge kontrolliert quasi die Konvergenzrate. Bei zu viel Regen kann der Wanderer vielleicht nicht schnell genug auf einen Berg flüchten. Je weniger Regen, desto länger dauert die Ausführung des Algorithmus, doch die Genauigkeit und die Konfidenz in das Ergebnis steigt.
 
-In der originalen Quelle\footnote{TODO: Ordentliche Quellenangaben und Zitate} ist nur von einer kleinen stochastischen Änderung die Rede. Welche Verteilung diese haben soll wird nicht näher spezifiziert. Eine naheliegende Möglichkeit ist die Normalverteilung mit $\mu = 0$ und $\sigma$ als kleinen Wert der als Schrittweitenparameter betrachtet werden kann.\footnote{Der Wanderer ist dann ein Wiener.} Eine andere Möglichkeit ist eine feste Schrittweite in eine zufällige Richtung zu gehen. Letztlich wurde eine Affinkombination dieser beiden gewählt. 
+In der originalen Quelle ist nur von einer kleinen stochastischen Änderung die Rede. Welche Verteilung diese haben soll wird nicht näher spezifiziert. Eine naheliegende Möglichkeit ist die Normalverteilung mit $\mu = 0$ und $\sigma$ als kleinen Wert der als Schrittweitenparameter betrachtet werden kann.\footnote{Der Wanderer ist dann ein Wiener.} Eine andere Möglichkeit ist eine feste Schrittweite in eine zufällige Richtung zu gehen. Letztlich wurde eine Affinkombination dieser beiden gewählt. 
 
 %%% Normalverteilung, normierte Normalverteilung (also konstanter Schrittweite in zufällige Richtung, deren Linearkombination (also die Tischtuch über Donut-Verteilung) %%%
 
@@ -282,7 +283,7 @@ In der originalen Quelle\footnote{TODO: Ordentliche Quellenangaben und Zitate} i
 
 
 
-\subsection{Downhill Simplex}
+\subsection{Downhill Simplex \cite{nelder_mead_1965} }
 
 Dieser Algorithmus basiert auf einem Simplex im Parameterraum, also der konvexen Hülle von $d+1$ vielen Punkten. Die Eckpunkte werden ausgewertet und in jedem Schritt wird der schlechteste Eckpunkt durch einen besseren ersetzt. Der Simplex bewegt sich dadurch im Laufe der Zeit dem figurativen Hügel hinab einem lokalen Minimum entgegen und zieht sich letztendlich über dem Minimum zusammen.
 
@@ -393,21 +394,27 @@ Wir führen die drei Algorithmen mehrmals durch und beobachten Konvergenzverhalt
 
 Um das Konvergenzverhalten zu beobachten betrachten wir die Spalte für die Bewertungsfunktion in den Logs. Sei $e_i$ die Bewertung der $i$-ten Modellauswertung, also der $i$-ten Zeile im Log. Wir betrachten $m_i := min\left\{e_k:k\leq i\right\}$. Dies ist die Bewertung, wenn man den Algorithmus nach $i$ Modellauswertungen abbrechen würde. Die Folge der $m_i$ ist durch Definition monoton fallend und flacht ab wenn ein (zumindest lokales) Minimum gefunden wird. 
 
-%\subsubsection{Partikelswarm}
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_plot_Partikelschwarm.png}
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_boxplot_Partikelschwarm.png}
+\caption{Konvergenzrate: Partikelschwarm}
+\end{figure}
 
 Beim Partikelschwarm sieht man, dass stetige Verbesserungen auch noch spät gefunden werden. Man kann vermuten, dass mehr Auswertungen durchaus zu mehr besseren Ergebnissen führen würden. Nur 160 Auswertungen sind definitiv zu wenig für den Partikelschwarm. 
 
-%\subsubsection{Sintflut}
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_plot_Sintflut.png}
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_boxplot_Sintflut.png}
+\caption{Konvergenzrate: Sintflut}
+\end{figure}
 
 Die Bewertungen beim Sintflut-Algorithmus sind kreuz und quer. Manche passen gar nicht auf die Skala während ein anderer Durchgang nach nur 11 Auswertungen einen der besten Werte insgesamt findet, oder besser gesagt, errät. Diese große Varianz macht den Algorithmus unbrauchbar.
 
-%\subsubsection{Downhill Simplex}
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_plot_Downhill_Simplex.png}
 \includegraphics[width = \textwidth/2]{5p_neu_convergence_boxplot_Downhill_Simplex.png}
+\caption{Konvergenzrate: Downhill Simplex}
+\end{figure}
 
 Der Downhill Simplex-Algorithmus konvergiert sehr schnell innerhalb der ersten 160 Auswertungen und bleibt dann in einem lokalen Minimum liegen. Er profitiert nicht wirklich von mehr Auswertungen. Die schnelle und sehr konsistene Konvergenzrate ist ein Vorteil.
 
@@ -433,15 +440,23 @@ Durchschnitt der TOP3      & 2.84 & 3.18 & 2.90 & 2.55 & 3.76 & 2.82 \\ \hline
 
 Für das zweite Experiment geben wir keine Einschränkungen an die Parameter vor. Jedes Jahr ist unabhängig von den anderen. Damit ist $d = 30$. Wie zuvor seinen die $bounds = [0,1500]^d$. Die Anzahl der erlaubten Auswertungen wird auf 2400 erhöht.
 
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{15p_convergence_plot_Partikelschwarm.png}
 \includegraphics[width = \textwidth/2]{15p_convergence_boxplot_Partikelschwarm.png}
+\caption{Konvergenzrate: Partikelschwarm}
+\end{figure}
 
-
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{15p_convergence_plot_Sintflut.png}
 \includegraphics[width = \textwidth/2]{15p_convergence_boxplot_Sintflut.png}
+\caption{Konvergenzrate: Sintflut}
+\end{figure}
 
+\begin{figure}[h]
 \includegraphics[width = \textwidth/2]{15p_convergence_plot_Downhill_Simplex.png}
 \includegraphics[width = \textwidth/2]{15p_convergence_boxplot_Downhill_Simplex.png}
+\caption{Konvergenzrate: Downhill Simplex}
+\end{figure}
 
 
 Durch die größere Freiheit in den Parametern erhofft man sich besser bewertete Lösungen, da ja der alte Parameterraum Teilmenge des neuen ist. Alle drei Algorithmen können aber leider mit der zusätzlichen Komplexität nicht umgehen und erbringen trotz verfünffachter Zeit schlechtere Bewertungen. Der Sintflut-Algorithmus leidet ganz besonders, man beachte die veränderte y-Achse.
@@ -472,12 +487,82 @@ Die Zusammenfassung von je drei Jahren zu einem Parameter ist eine sehr sinnvoll
 
 \section{Die besten Lösungen}
 
+Zurück zur ursprünglichen Frage. Wie sollen die Ausbildungsstellen gewählt werden? Wir sehen uns die besten Resultate jeder Kalibrierungsmethode an. (Detailliertere Darstellungen in Appendix A)
 
 
+\begin{center}
+\begin{tabular}{| l | l | r | r | r | r | r |}
+\hline
+& & 2016-18 & 2019-21 & 2022-24 & 2025-27 & 2028-2030 \\ \hhline{|=|=|=|=|=|=|=|}
+Partikelschwarm  & $AM_a$ & 271 & 718 & 366 & 304 & 376\\ \hline
+				 & $FA_a$ & 680 & 909 & 676 & 547 & 401\\ \hhline{|=|=|=|=|=|=|=|}
+Sintflut	     & $AM_a$ & 347 & 578 & 508 & 355 & 276\\ \hline
+				 & $FA_a$ & 709 & 809 & 624 & 794 & 1089\\ \hhline{|=|=|=|=|=|=|=|}
+Downhill Simplex & $AM_a$ & 338 & 621 & 455 & 371 & 532\\ \hline
+				 & $FA_a$ & 602 & 907 & 956 & 874 & 832\\ \hline
+\end{tabular}
+\end{center}
+
+Die Parameter sind sich in den frühen Jahren halbwegs einig, doch in den späteren Jahren klaffen sie weit auseinander. Abbildung \ref{fig:scatter} zeigt diesen Trend auch auf dem gesamten Datenset aller 25521 Auswertungen. Die 10 Subplots entsprechen den 10 Parametern und zeigen die Bewertung gegenüber der dem Parameterwert. Man erkennt dreieckige Punktwolken, deren Spitzen auf den optimalen Parameterwert zeigen. Die Parameter für Allgemeinmediziner sowie tendenziell die früheren Parameter weisen spitzere Spitzen auf. Dies deutet darauf hin, dass die sorgfältige Wahl dieser wichtiger ist als die restlichen Parameter oder zumindest, dass die Spanne von akzeptablen Werten bei kleiner ist. Bei dem Facharztparameter für 2028-30 ist gar keine Spitze zu sehen, sondern eher eine flache Front. Während dieser Parameter sicher einen Einfluss auf das Modell hat, hat er keinen oder höchstens einen winzig kleinen Einfluss auf die Bewertung. Ergo, man kann mit den hier beschriebenen Methoden keine Policy-Empfehlung für die letzten Jahre abgeben.
+
+Die letztendliche Empfehlung lautet daher:
+
+\begin{center}
+\begin{tabular}{| l | r | r | r | r | r |}
+\hline
+& 2016-18 & 2019-21 & 2022-24 & 2025-27 & 2028-2030 \\ \hline
+$AM_a$ & 300 & 650 & 400 & 350 & 400 \\ \hline
+$FA_a$ & 750 & 900 & 800 & 700 &  ?? \\ \hline
+\end{tabular}
+\end{center}
+
+Man sollte auf jeden Fall vor 2028 neu simulieren und optimieren, und gegebenenfalls schon früher.
+
+\begin{figure}[H]
+\includegraphics[width = \textwidth]{megascatterplot.png}
+\caption{Scatterplot der Parameter gegenüber der Bewertung. Rot = Partikelschwarm, Grün = Sintflut, Blau = Downhill Simplex}
+\label{fig:scatter}
+\end{figure}
+
+\newpage
+
+\bibliography{bib}
+\bibliographystyle{alpha}
+
+\appendix
+
+\section{Aufschlüsselungen}
+
+\begin{figure}[h]
 \includegraphics[width = \textwidth]{resultPlots/Partikelschwarm27.png}
-\includegraphics[width = \textwidth]{resultPlots/Sintflut27.png}
-\includegraphics[width = \textwidth]{resultPlots/Downhill_Simplex21.png}
+\caption{Resultataufschlüsselung: bester Partikelswarm}
+\end{figure}
 
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{resultPlots/Sintflut27.png}
+\caption{Resultataufschlüsselung: bester Sintflut}
+\end{figure}
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{resultPlots/Downhill_Simplex21.png}
+\caption{Resultataufschlüsselung: bester Downhill Simplex}
+\end{figure}
+
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{resultPlots/Partikelschwarm5.png}
+\caption{Resultataufschlüsselung: zufällig gewählter Partikelswarm}
+\end{figure}
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{resultPlots/Sintflut5.png}
+\caption{Resultataufschlüsselung: zufällig gewählter Sintflut}
+\end{figure}
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{resultPlots/Downhill_Simplex5.png}
+\caption{Resultataufschlüsselung: zufällig gewählter Downhill Simplex}
+\end{figure}
 
 \end{document}
 
